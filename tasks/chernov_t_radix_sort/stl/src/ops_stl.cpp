@@ -136,10 +136,12 @@ void ChernovTRadixSortSTL::ScatterElements(const std::vector<uint32_t> &input, s
   }
 }
 
-void ChernovTRadixSortSTL::ConvertFromIntegers(const std::vector<uint32_t> &input, std::vector<int> &output,
-                                               size_t start, size_t end, uint32_t sign_mask) {
+void ChernovTRadixSortSTL::ConvertFromIntegers(const std::vector<uint32_t> &input,
+                                               std::vector<int> &output,
+                                               size_t start, size_t end,
+                                               uint32_t sign_mask) {
   for (size_t i = start; i < end; ++i) {
-    output[i] = static_cast<int>(input[i]) ^ sign_mask;
+    output[i] = static_cast<int>(input[i] ^ sign_mask);
   }
 }
 

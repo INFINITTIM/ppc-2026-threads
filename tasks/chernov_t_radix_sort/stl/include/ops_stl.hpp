@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "chernov_t_radix_sort/common/include/common.hpp"
@@ -20,12 +22,13 @@ class ChernovTRadixSortSTL : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  // Последовательная версия для малых массивов
   static void RadixSortLSDSequential(std::vector<int> &data);
+  static void RadixSortLSDParallel(std::vector<int> &data, int num_threads);
 
-  // Вспомогательные функции для параллельной версии (снижают когнитивную сложность)
   static void ConvertToIntegers(const std::vector<int> &input, std::vector<uint32_t> &output, size_t start, size_t end,
                                 uint32_t sign_mask);
+  static void ConvertFromIntegers(const std::vector<uint32_t> &input, std::vector<int> &output, size_t start,
+                                  size_t end, uint32_t sign_mask);
   static void ComputeLocalHistograms(const std::vector<uint32_t> &data, std::vector<std::vector<int>> &local_counts,
                                      size_t start, size_t end, int shift, int thread_idx);
   static void ComputeGlobalStarts(const std::vector<std::vector<int>> &local_counts, std::vector<int> &global_start,
@@ -36,11 +39,6 @@ class ChernovTRadixSortSTL : public BaseTask {
                               const std::vector<int> &global_start, const std::vector<std::vector<int>> &thread_offset,
                               std::vector<std::vector<int>> &local_counter, size_t start, size_t end, int shift,
                               int thread_idx);
-  static void ConvertFromIntegers(const std::vector<uint32_t> &input, std::vector<int> &output, size_t start,
-                                  size_t end, uint32_t sign_mask);
-
-  // Основная параллельная функция
-  static void RadixSortLSDParallel(std::vector<int> &data, int num_threads);
 };
 
 }  // namespace chernov_t_radix_sort
