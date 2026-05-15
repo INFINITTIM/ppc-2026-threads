@@ -10,7 +10,7 @@ namespace chernov_t_radix_sort {
 class ChernovTRadixSortALL : public BaseTask {
  public:
   static constexpr ppc::task::TypeOfTask GetStaticTypeOfTask() {
-    return ppc::task::TypeOfTask::kALL;  // ← kALL
+    return ppc::task::TypeOfTask::kALL;
   }
   explicit ChernovTRadixSortALL(const InType &in);
 
@@ -20,8 +20,15 @@ class ChernovTRadixSortALL : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
+  // Основные алгоритмические функции
   static void RadixSortLSDParallelOMP(std::vector<int> &data);
   static void SimpleMerge(const std::vector<int> &left, const std::vector<int> &right, std::vector<int> &result);
+
+  // Вспомогательные функции (тоже методы класса)
+  void ComputeChunkSizes(int num_processes, size_t total_elements, std::vector<int> &recv_counts,
+                         std::vector<int> &displs) const;
+  void MergeChunksOnRank0(const std::vector<int> &global_result, const std::vector<int> &recv_counts,
+                          const std::vector<int> &displs, std::vector<int> &output) const;
 };
 
 }  // namespace chernov_t_radix_sort
