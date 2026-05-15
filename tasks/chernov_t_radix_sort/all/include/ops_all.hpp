@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>  // ← ДОБАВИЛИ: для size_t
 #include <vector>
 
 #include "chernov_t_radix_sort/common/include/common.hpp"
@@ -24,11 +25,11 @@ class ChernovTRadixSortALL : public BaseTask {
   static void RadixSortLSDParallelOMP(std::vector<int> &data);
   static void SimpleMerge(const std::vector<int> &left, const std::vector<int> &right, std::vector<int> &result);
 
-  // Вспомогательные функции (тоже методы класса)
-  void ComputeChunkSizes(int num_processes, size_t total_elements, std::vector<int> &recv_counts,
-                         std::vector<int> &displs) const;
-  void MergeChunksOnRank0(const std::vector<int> &global_result, const std::vector<int> &recv_counts,
-                          const std::vector<int> &displs, std::vector<int> &output) const;
+  // Вспомогательные функции (static, так как не используют члены класса)
+  static void ComputeChunkSizes(int num_processes, size_t total_elements, std::vector<int> &recv_counts,
+                                std::vector<int> &displs);
+  static void MergeChunksOnRank0(const std::vector<int> &global_result, const std::vector<int> &recv_counts,
+                                 const std::vector<int> &displs, std::vector<int> &output);
 };
 
 }  // namespace chernov_t_radix_sort

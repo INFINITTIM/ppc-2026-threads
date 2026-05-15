@@ -3,11 +3,13 @@
 #include <mpi.h>
 #include <omp.h>
 
-#include <algorithm>
+#include <algorithm>  // ← std::ranges::merge уже здесь (C++20)
 #include <cstddef>
 #include <cstdint>
-#include <ranges>
+#include <utility>  // ← ДОБАВИЛИ: для std::move
 #include <vector>
+
+#include "chernov_t_radix_sort/common/include/common.hpp"  // ← Явный инклуд для InType
 
 namespace chernov_t_radix_sort {
 
@@ -106,11 +108,11 @@ void ChernovTRadixSortALL::SimpleMerge(const std::vector<int> &left, const std::
 }
 
 // ============================================================================
-// ComputeChunkSizes
+// ComputeChunkSizes (static)
 // ============================================================================
 
 void ChernovTRadixSortALL::ComputeChunkSizes(int num_processes, size_t total_elements, std::vector<int> &recv_counts,
-                                             std::vector<int> &displs) const {
+                                             std::vector<int> &displs) {
   int base = static_cast<int>(total_elements / static_cast<size_t>(num_processes));
   int remainder = static_cast<int>(total_elements % static_cast<size_t>(num_processes));
   int current_disp = 0;
@@ -122,12 +124,12 @@ void ChernovTRadixSortALL::ComputeChunkSizes(int num_processes, size_t total_ele
 }
 
 // ============================================================================
-// MergeChunksOnRank0
+// MergeChunksOnRank0 (static)
 // ============================================================================
 
 void ChernovTRadixSortALL::MergeChunksOnRank0(const std::vector<int> &global_result,
                                               const std::vector<int> &recv_counts, const std::vector<int> &displs,
-                                              std::vector<int> &output) const {
+                                              std::vector<int> &output) {
   if (global_result.empty()) {
     output.clear();
     return;
@@ -158,7 +160,7 @@ void ChernovTRadixSortALL::MergeChunksOnRank0(const std::vector<int> &global_res
       std::vector<int> next_part(global_result.begin() + offset, global_result.begin() + offset + recv_counts[i]);
       std::vector<int> new_merged;
       SimpleMerge(merged, next_part, new_merged);
-      merged = std::move(new_merged);
+      merged = std::move(new_merged);  // ← std::move из <utility>
       offset += recv_counts[i];
     }
   }
